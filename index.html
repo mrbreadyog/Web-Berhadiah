@@ -86,8 +86,8 @@
   /* POP-UP CARD COMMON */
   .auth-card, .edit-card {
     background:linear-gradient(180deg,#20222F,#181A24);border:1px solid var(--border);
-    border-radius:20px;padding:24px 20px;text-align:left;max-width:420px;width:100%;position:relative;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    border-radius:20px;padding:24px 20px;text-align:left;max-width:440px;width:100%;position:relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto;
   }
   .auth-card h2, .edit-card h2 { font-family: 'Anton', sans-serif; color: var(--gold); margin-top:0; margin-bottom: 18px; font-size:22px; text-align:center; letter-spacing:1px;}
   .auth-card input, .edit-card input, .edit-card select {
@@ -116,7 +116,7 @@
   body.mode-user header .sync-badge { display: flex !important; }
   
   body.mode-admin .wheel-col { display: none !important; }
-  body.mode-admin main { grid-template-columns: 1fr !important; max-width: 600px; margin: 0 auto; width: 100%; }
+  body.mode-admin main { grid-template-columns: 1fr !important; max-width: 620px; margin: 0 auto; width: 100%; }
   
   .wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;}
 
@@ -278,12 +278,13 @@
 
   .swatch{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
   .prize-info { flex:1; min-width:0; display: flex; flex-direction: column; gap: 2px; }
-  .prize-title-row { display: flex; align-items: center; gap: 6px; }
+  .prize-title-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap;}
   .p-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap; font-weight: 600;}
   
   .badge-type { font-size: 9px; padding: 1px 6px; border-radius: 4px; font-family: 'Space Mono', monospace; text-transform: uppercase; font-weight: 700; }
   .badge-std { background: rgba(94, 198, 255, 0.2); color: var(--sky); border: 1px solid rgba(94, 198, 255, 0.3); }
   .badge-exc { background: rgba(255, 201, 60, 0.2); color: var(--gold); border: 1px solid rgba(255, 201, 60, 0.4); }
+  .badge-sound { background: rgba(63, 184, 175, 0.2); color: var(--teal); border: 1px solid rgba(63, 184, 175, 0.4); font-size: 8px; padding: 1px 4px; }
   .badge-habis{background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:999px;margin-left:4px;}
   
   .prize-schedule { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 4px; }
@@ -307,7 +308,7 @@
   .btn-icon.edit-btn:hover { color: var(--gold); }
   .btn-icon.rm-btn:hover { color: var(--red); }
 
-  .empty-note{color:var(--muted);font-size:13px;padding:8px 0;}
+  .empty-note{color:var(--muted);font-size:13px;padding:8px 0; text-align: center;}
 
   /* SEPARATE RESET BUTTONS */
   .reset-btn{width:100%;margin-top:12px;background:none;border:1px dashed var(--border);color:var(--muted);border-radius:9px;padding:9px;font-size:12px;cursor:pointer; touch-action: manipulation; transition: all 0.2s;}
@@ -418,6 +419,17 @@
       
       <label style="margin-top: 10px;">Countdown Putaran (Spins)</label>
       <input type="number" id="editSpinReq" min="1" value="5">
+
+      <!-- MENU IMPORT SOUND HADIAH EXCLUSIVE -->
+      <label style="margin-top: 12px; color: var(--gold);">🎵 Sound Exclusive (Format MP3/WAV/OGG)</label>
+      <div style="display:flex; flex-direction:column; gap:8px; background:rgba(0,0,0,0.25); padding:10px; border-radius:8px; border:1px dashed var(--border);">
+        <input type="file" id="editPrizeSoundInput" accept="audio/*" style="font-size:12px; margin-bottom:0;">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button type="button" class="btn-secondary" id="testEditSoundBtn" style="display:none; width:auto; padding:6px 12px; font-size:12px;">▶ Test Sound</button>
+          <button type="button" class="btn-secondary" id="removeEditSoundBtn" style="display:none; width:auto; padding:6px 12px; font-size:12px; color:var(--red); border-color:var(--red);">🗑️ Hapus Sound</button>
+        </div>
+        <div id="editSoundStatusText" style="font-size:11px; color:var(--teal); font-family:'Space Mono',monospace;">Belum ada suara diimport.</div>
+      </div>
     </div>
 
     <button class="btn-primary" id="saveEditPrizeBtn">Simpan Perubahan</button>
@@ -491,6 +503,15 @@
                 <span style="color: var(--gold); font-weight:700;">🔄 Countdown Spin:</span>
                 <input type="number" id="newSpinReq" value="5" min="1" style="width: 70px;">
             </div>
+            <!-- IMPORT SOUND HADIAH EXCLUSIVE BARU -->
+            <div class="exclusive-time-row" style="flex-direction:column; align-items:flex-start; width:100%;">
+                <span style="color: var(--gold); font-weight:700;">🎵 Import Sound Exclusive (Audio):</span>
+                <input type="file" id="newPrizeSoundInput" accept="audio/*" style="width:100%; font-size:12px; padding:4px;">
+                <div style="display:flex; gap:6px; margin-top:4px; align-items:center;">
+                  <button type="button" id="testNewSoundBtn" class="btn-secondary" style="display:none; width:auto; padding:4px 8px; font-size:11px;">▶ Test Sound</button>
+                  <span id="newSoundStatusText" style="font-size:11px; color:var(--teal); font-family:'Space Mono',monospace;"></span>
+                </div>
+            </div>
           </div>
 
           <button class="btn-add-submit" id="addBtn">+ Tambah Hadiah</button>
@@ -509,14 +530,28 @@
         <button class="reset-btn" id="resetPrizesBtn">🗑️ Hapus Semua Hadiah</button>
       </div>
 
-      <!-- PANEL RIWAYAT -->
+      <!-- PANEL RIWAYAT DENGAN FILTER TANGGAL -->
       <div class="panel">
-        <h2>Riwayat Undian <span class="count-chip" id="historyCount">0/200</span></h2>
-        <!-- SEPARATE RESET HISTORY BUTTON -->
-        <button class="reset-btn" id="resetHistoryBtn" style="margin-top: 0; margin-bottom: 10px;">🧹 Hapus Semua Riwayat</button>
-        <button class="export-btn" id="exportExcelBtn" disabled>📥 Download Riwayat (Excel/CSV)</button>
-        <div id="historyList"></div>
-        <div class="empty-note" id="historyEmpty">Belum ada undian.</div>
+        <h2>Riwayat Undian <span class="count-chip" id="historyCount">0</span></h2>
+
+        <!-- FILTER PILIHAN TANGGAL RIWAYAT -->
+        <div style="background:var(--panel-2); border:1px solid var(--border); padding:10px; border-radius:10px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+            <label for="historyDateFilter" style="font-size:11px; font-family:'Space Mono',monospace; color:var(--gold); text-transform:uppercase;">📅 Pilih Tanggal:</label>
+            <div style="display:flex; gap:4px;">
+              <button id="btnFilterToday" class="btn-secondary" style="padding:4px 8px; font-size:11px; width:auto;">Hari Ini</button>
+              <button id="btnFilterAll" class="btn-secondary" style="padding:4px 8px; font-size:11px; width:auto;">Semua</button>
+            </div>
+          </div>
+          <input type="date" id="historyDateFilter" style="width:100%; background:var(--panel); border:1px solid var(--border); color:var(--cream); padding:8px; border-radius:8px; font-family:'Manrope',sans-serif; font-size:13px;">
+        </div>
+
+        <!-- TOMBOL AKSI RIWAYAT -->
+        <button class="export-btn" id="exportExcelBtn" disabled>📥 Export Excel/CSV (Tanggal Terpilih)</button>
+        <button class="reset-btn" id="resetHistoryBtn" style="margin-top:0; margin-bottom: 12px;">🧹 Hapus Riwayat (Tanggal Terpilih)</button>
+
+        <div id="historyList" style="max-height:300px; overflow-y:auto;"></div>
+        <div class="empty-note" id="historyEmpty">Belum ada undian pada tanggal ini.</div>
       </div>
     </div>
   </main>
@@ -558,7 +593,7 @@
     console.log("Mode cloud tidak aktif, beralih ke penyimpanan lokal.");
   }
 
-  const STORAGE_KEY = 'roda-undian-state-v7-cd';
+  const STORAGE_KEY = 'roda-undian-state-v8-sound-history';
   const PWD_KEY = 'roda-undian-pwd';
   const PALETTE = ['#FFC93C','#E8483C','#3FB8AF','#8C6FE6','#FF8B5E','#5EC6FF'];
   const CENTER = 200, RADIUS = 190;
@@ -570,6 +605,10 @@
   let sliceRanges = []; 
   let isInitialLoad = true;
   let draggedIndex = null;
+
+  // Temporary sound stores for uploads
+  let tempNewSoundData = null;
+  let tempEditSoundData = null;
 
   // DOM Elements
   const el = (id) => document.getElementById(id);
@@ -587,6 +626,7 @@
   const stageEmptyMsg = el('stageEmptyMsg');
   const exportExcelBtn = el('exportExcelBtn');
   const wibClockDisplay = el('wibClockDisplay');
+  const historyDateFilter = el('historyDateFilter');
 
   function showNotice(message, title = 'INFORMASI') {
     el('noticeTitle').textContent = title;
@@ -597,10 +637,22 @@
     el('noticeOverlay').classList.remove('show');
   });
 
-  function getWIBDate() {
-    const now = new Date();
-    const wibString = now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+  function getWIBDate(dateObj = new Date()) {
+    const wibString = dateObj.toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
     return new Date(wibString);
+  }
+
+  function getWIBDateStr(dateObj = new Date()) {
+    const wib = getWIBDate(dateObj);
+    const y = wib.getFullYear();
+    const m = String(wib.getMonth() + 1).padStart(2, '0');
+    const d = String(wib.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function getItemWIBDateStr(isoString) {
+    if (!isoString) return '';
+    return getWIBDateStr(new Date(isoString));
   }
 
   function updateWIBClock() {
@@ -640,6 +692,11 @@
     } else {
       return currentMin >= startMin || currentMin <= endMin;
     }
+  }
+
+  // Set default history date filter to Today
+  if (historyDateFilter) {
+    historyDateFilter.value = getWIBDateStr();
   }
 
   function getDbRef() {
@@ -688,7 +745,7 @@
       prizes: [
         {id: uid(), text:'Voucher 50rb', stock:10, type:'standard'},
         {id: uid(), text:'Voucher 100rb', stock:5, type:'standard'},
-        {id: uid(), text:'Grand Prize Exclusive', stock:2, type:'exclusive', startTime:'00:00', endTime:'23:59', spinReq:5, spinsLeft:5}
+        {id: uid(), text:'Grand Prize Exclusive', stock:2, type:'exclusive', startTime:'00:00', endTime:'23:59', spinReq:5, spinsLeft:5, soundData: null}
       ],
       history: []
     };
@@ -818,6 +875,109 @@
     updateSpinAvailability();
   }
 
+  // --- SOUND HANDLING LOGIC ---
+  function handleAudioFileUpload(fileInputEl, callback) {
+    const file = fileInputEl.files[0];
+    if (!file) {
+      callback(null);
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) { // 2MB Limit
+      showNotice('Ukuran file audio terlalu besar (maksimal 2MB)!', 'PERINGATAN');
+      fileInputEl.value = '';
+      callback(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      callback(e.target.result);
+    };
+    reader.onerror = function() {
+      showNotice('Gagal membaca file audio!', 'ERROR');
+      callback(null);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  el('newPrizeSoundInput').addEventListener('change', (e) => {
+    handleAudioFileUpload(e.target, (dataUrl) => {
+      tempNewSoundData = dataUrl;
+      if (dataUrl) {
+        el('testNewSoundBtn').style.display = 'inline-block';
+        el('newSoundStatusText').textContent = 'Audio siap!';
+      } else {
+        el('testNewSoundBtn').style.display = 'none';
+        el('newSoundStatusText').textContent = '';
+      }
+    });
+  });
+
+  el('testNewSoundBtn').addEventListener('click', () => {
+    playPrizeSound(tempNewSoundData);
+  });
+
+  el('editPrizeSoundInput').addEventListener('change', (e) => {
+    handleAudioFileUpload(e.target, (dataUrl) => {
+      tempEditSoundData = dataUrl;
+      if (dataUrl) {
+        el('testEditSoundBtn').style.display = 'inline-block';
+        el('removeEditSoundBtn').style.display = 'inline-block';
+        el('editSoundStatusText').textContent = 'Audio baru dipilih.';
+      }
+    });
+  });
+
+  el('testEditSoundBtn').addEventListener('click', () => {
+    playPrizeSound(tempEditSoundData);
+  });
+
+  el('removeEditSoundBtn').addEventListener('click', () => {
+    tempEditSoundData = null;
+    el('editPrizeSoundInput').value = '';
+    el('testEditSoundBtn').style.display = 'none';
+    el('removeEditSoundBtn').style.display = 'none';
+    el('editSoundStatusText').textContent = 'Sound telah dihapus.';
+  });
+
+  function playPrizeSound(soundData) {
+    if (soundData) {
+      try {
+        const audio = new Audio(soundData);
+        audio.play().catch(err => {
+          console.warn("Playback error:", err);
+          playExclusiveFanfare();
+        });
+      } catch (e) {
+        playExclusiveFanfare();
+      }
+    } else {
+      playExclusiveFanfare();
+    }
+  }
+
+  // Fallback Digital Sound / Fanfare
+  function playExclusiveFanfare() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + idx * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + idx * 0.12);
+        osc.stop(ctx.currentTime + idx * 0.12 + 0.45);
+      });
+    } catch(e) {}
+  }
+
   el('prizeTypeSelect').addEventListener('change', (e) => {
     if (e.target.value === 'exclusive') {
       el('newExclusiveTimeBox').classList.add('show');
@@ -868,6 +1028,13 @@
       typeBadge.textContent = p.type === 'exclusive' ? '⭐ Exclusive' : 'Standard';
       titleRow.appendChild(typeBadge);
 
+      if (p.type === 'exclusive' && p.soundData) {
+        const soundBadge = document.createElement('span');
+        soundBadge.className = 'badge-type badge-sound';
+        soundBadge.textContent = '🎵 Sound';
+        titleRow.appendChild(soundBadge);
+      }
+
       if(isOutStock){
         const badge = document.createElement('span');
         badge.className='badge-habis'; badge.textContent='HABIS';
@@ -888,7 +1055,6 @@
         schedDiv.appendChild(document.createTextNode(' ' + statusText));
         prizeInfo.appendChild(schedDiv);
         
-        // Menampilkan Info Sisa Countdown (Spin)
         const countdownDiv = document.createElement('div');
         countdownDiv.className = 'prize-schedule';
         countdownDiv.style.marginTop = '2px';
@@ -958,8 +1124,8 @@
         }
       });
 
-      // Touch Events for Drag (Mobile)
-      dragHandle.addEventListener('touchstart', (e) => {
+      // Touch Events
+      dragHandle.addEventListener('touchstart', () => {
         draggedIndex = i;
         li.classList.add('dragging');
       }, { passive: true });
@@ -1008,8 +1174,20 @@
     el('editEndTime').value = prize.endTime || '23:59';
     el('editSpinReq').value = prize.spinReq || 5;
 
+    tempEditSoundData = prize.soundData || null;
+    el('editPrizeSoundInput').value = '';
+
     if (prize.type === 'exclusive') {
       el('editExclusiveTimeGroup').style.display = 'block';
+      if (tempEditSoundData) {
+        el('testEditSoundBtn').style.display = 'inline-block';
+        el('removeEditSoundBtn').style.display = 'inline-block';
+        el('editSoundStatusText').textContent = '🎵 Sound kustom tersimpan.';
+      } else {
+        el('testEditSoundBtn').style.display = 'none';
+        el('removeEditSoundBtn').style.display = 'none';
+        el('editSoundStatusText').textContent = 'Belum ada suara diimport.';
+      }
     } else {
       el('editExclusiveTimeGroup').style.display = 'none';
     }
@@ -1056,10 +1234,12 @@
       
       if (newType === 'exclusive') {
          p.spinReq = newSpinReq;
-         p.spinsLeft = newSpinReq; // Reset spinsLeft jika diedit
+         p.spinsLeft = newSpinReq; 
+         p.soundData = tempEditSoundData;
       } else {
          p.spinReq = null;
          p.spinsLeft = null;
+         p.soundData = null;
       }
       
       syncStockByName(newName, newStock);
@@ -1077,25 +1257,46 @@
     saveState();
   }
 
-  function renderHistory(){
-    const MAX_HISTORY = 200;
-    historyCountEl.textContent = `${state.history.length}/${MAX_HISTORY}`;
-    if (state.history.length >= MAX_HISTORY) {
-      historyCountEl.style.background = 'var(--red)';
-      historyCountEl.style.color = '#fff';
-    } else {
-      historyCountEl.style.background = 'var(--panel-2)';
-      historyCountEl.style.color = 'var(--muted)';
+  // --- FILTERING RIWAYAT HARIAN ---
+  function getFilteredHistory() {
+    const selectedDate = historyDateFilter ? historyDateFilter.value : '';
+    if (!selectedDate) {
+      return state.history;
     }
+    return state.history.filter(h => getItemWIBDateStr(h.time) === selectedDate);
+  }
+
+  el('btnFilterToday').addEventListener('click', () => {
+    historyDateFilter.value = getWIBDateStr();
+    renderHistory();
+  });
+
+  el('btnFilterAll').addEventListener('click', () => {
+    historyDateFilter.value = '';
+    renderHistory();
+  });
+
+  if (historyDateFilter) {
+    historyDateFilter.addEventListener('change', renderHistory);
+  }
+
+  function renderHistory(){
+    const filtered = getFilteredHistory();
+    const totalCount = state.history.length;
+    const filterCount = filtered.length;
+
+    historyCountEl.textContent = historyDateFilter.value 
+      ? `${filterCount} (Total: ${totalCount})` 
+      : `${totalCount}`;
 
     historyListEl.innerHTML = '';
-    historyEmptyEl.style.display = state.history.length ? 'none' : 'block';
-    exportExcelBtn.disabled = state.history.length === 0;
+    historyEmptyEl.style.display = filterCount ? 'none' : 'block';
+    exportExcelBtn.disabled = filterCount === 0;
 
-    state.history.forEach((h, idx)=>{
+    filtered.forEach((h, idx)=>{
       const div = document.createElement('div');
       div.className='ticket';
-      const num = String(state.history.length - idx).padStart(3,'0');
+      const num = String(filtered.length - idx).padStart(3,'0');
       div.innerHTML = `
         <div class="t-main">
           <div class="t-name">${escapeHtml(h.participant || '(tanpa nama)')}</div>
@@ -1108,22 +1309,24 @@
   }
 
   exportExcelBtn.addEventListener('click', () => {
-    if (state.history.length === 0) return;
+    const filtered = getFilteredHistory();
+    if (filtered.length === 0) return;
 
     let csvContent = "No,Nama Peserta,Hadiah,Waktu\r\n";
-    state.history.forEach((h, idx) => {
-      const no = state.history.length - idx;
+    filtered.forEach((h, idx) => {
+      const no = filtered.length - idx;
       const name = `"${(h.participant || '').replace(/"/g, '""')}"`;
       const prize = `"${(h.prize || '').replace(/"/g, '""')}"`;
       const time = `"${formatTime(h.time)}"`;
       csvContent += `${no},${name},${prize},${time}\r\n`;
     });
 
+    const dateSuffix = historyDateFilter.value ? `_${historyDateFilter.value}` : '_semua';
     const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `riwayat_undian_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute("download", `riwayat_undian${dateSuffix}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1138,17 +1341,12 @@
   }
 
   function updateSpinAvailability(){
-    const MAX_HISTORY = 200;
     const activeSpinnableCount = state.prizes.filter(s => (s.stock || 0) > 0).length;
     const nameFilled = participantInput.value.trim().length > 0;
-    const isHistoryFull = state.history.length >= MAX_HISTORY;
     
     stageEmptyMsg.style.display = (state.prizes.length && activeSpinnableCount===0) ? 'block' : 'none';
 
-    if(isHistoryFull){
-      spinBtn.disabled = true;
-      hintEl.textContent = '⛔ Riwayat penuh (200/200). Hapus riwayat di menu Admin untuk memutar.';
-    } else if(state.prizes.length === 0 || activeSpinnableCount === 0){
+    if(state.prizes.length === 0 || activeSpinnableCount === 0){
       spinBtn.disabled = true;
       hintEl.textContent = 'Tidak ada hadiah aktif yang bisa dimenangkan saat ini (Habis).';
     } else if(isSpinning){
@@ -1183,7 +1381,6 @@
       return;
     }
 
-    // TAMPILAN RODA (Pembagian sama rata secara visual)
     const totalSlices = available.length;
     const segAngle = 360 / totalSlices;
 
@@ -1290,13 +1487,18 @@
       startTime: type === 'exclusive' ? startTime : '00:00',
       endTime: type === 'exclusive' ? endTime : '23:59',
       spinReq: type === 'exclusive' ? spinReq : undefined,
-      spinsLeft: type === 'exclusive' ? spinReq : undefined
+      spinsLeft: type === 'exclusive' ? spinReq : undefined,
+      soundData: type === 'exclusive' ? tempNewSoundData : null
     });
     
     syncStockByName(val, stock);
 
     nameInput.value=''; stockInput.value='1';
     typeSelect.value = 'standard';
+    tempNewSoundData = null;
+    el('newPrizeSoundInput').value = '';
+    el('testNewSoundBtn').style.display = 'none';
+    el('newSoundStatusText').textContent = '';
     el('newExclusiveTimeBox').classList.remove('show');
     
     renderAll();
@@ -1336,7 +1538,8 @@
         startTime,
         endTime,
         spinReq: type === 'exclusive' ? spinReq : undefined,
-        spinsLeft: type === 'exclusive' ? spinReq : undefined
+        spinsLeft: type === 'exclusive' ? spinReq : undefined,
+        soundData: null
       });
       syncStockByName(name, stock);
     });
@@ -1395,24 +1598,33 @@
   let resetHistoryConfirming = false;
   el('resetHistoryBtn').addEventListener('click', () => {
     const btn = el('resetHistoryBtn');
+    const selectedDate = historyDateFilter ? historyDateFilter.value : '';
+    const dateLabel = selectedDate ? `pada ${selectedDate}` : 'keseluruhan';
+
     if (!resetHistoryConfirming) {
       resetHistoryConfirming = true;
-      btn.textContent = '⚠️ Klik sekali lagi untuk hapus riwayat';
+      btn.textContent = `⚠️ Klik sekali lagi untuk hapus riwayat (${dateLabel})`;
       btn.classList.add('confirming');
       setTimeout(() => {
         resetHistoryConfirming = false;
-        btn.textContent = '🧹 Hapus Semua Riwayat';
+        btn.textContent = '🧹 Hapus Riwayat (Tanggal Terpilih)';
         btn.classList.remove('confirming');
       }, 3000);
       return;
     }
     resetHistoryConfirming = false;
-    btn.textContent = '🧹 Hapus Semua Riwayat';
+    btn.textContent = '🧹 Hapus Riwayat (Tanggal Terpilih)';
     btn.classList.remove('confirming');
-    state.history = [];
+
+    if (selectedDate) {
+      state.history = state.history.filter(h => getItemWIBDateStr(h.time) !== selectedDate);
+    } else {
+      state.history = [];
+    }
+
     renderAll();
     saveState();
-    showNotice('Semua riwayat undian berhasil dibersihkan.', 'DIHAPUS');
+    showNotice(`Riwayat undian ${dateLabel} berhasil dibersihkan.`, 'DIHAPUS');
   });
 
   const wheelRotor = el('wheelRotor');
@@ -1423,10 +1635,6 @@
     const availableSlices = sliceRanges.filter(s => (s.prize.stock || 0) > 0);
     
     if(!participantName || availableSlices.length===0 || isSpinning) return;
-    if(state.history.length >= 200) {
-      showNotice('Riwayat undian sudah penuh (200/200). Harap minta Admin menghapus riwayat terlebih dahulu.', 'RIWAYAT PENUH');
-      return;
-    }
 
     isSpinning = true;
     updateSpinAvailability();
@@ -1436,43 +1644,33 @@
     // ALGORITMA COUNTDOWN EXCLUSIVE
     let triggeredExclusivePrize = null;
 
-    // 1. Proses penurunan angka countdown setiap putaran
     state.prizes.forEach(p => {
         if (p.type === 'exclusive' && (p.stock || 0) > 0 && isPrizeInWIBWindow(p)) {
-            // Inisialisasi jika belum diset
             if (typeof p.spinsLeft === 'undefined') p.spinsLeft = p.spinReq || 1;
             
-            // Turunkan countdown sebesar 1 untuk putaran ini
             if (p.spinsLeft > 0) {
                 p.spinsLeft--; 
             }
             
-            // Jika mencapai 0, maka p adalah jackpot yang akan ter-trigger sekarang
             if (p.spinsLeft === 0 && !triggeredExclusivePrize) {
                 triggeredExclusivePrize = p;
             }
         }
     });
 
-    // 2. Pemilihan Pemenang Aktual
     let selectedSlice = availableSlices[0];
 
     if (triggeredExclusivePrize) {
-        // Jika ada yang mencapai angka 0, pastikan dia yang menang!
         selectedSlice = availableSlices.find(s => s.prize.id === triggeredExclusivePrize.id) || availableSlices[0];
     } else {
-        // Jika tidak ada Exclusive yang ter-trigger, undi hadiah Standar saja
         const standardSlices = availableSlices.filter(s => s.prize.type !== 'exclusive');
         
         if (standardSlices.length > 0) {
-            // Acak secara normal diantara hadiah Standar
             selectedSlice = standardSlices[Math.floor(Math.random() * standardSlices.length)];
         } else {
-            // Edge Case: Jika SELURUH hadiah Standar sudah habis, dan hanya ada Exclusive,
-            // maka sistem terpaksa mengacak dan memberikan salah satu hadiah Exclusive lebih awal (fallback)
             selectedSlice = availableSlices[Math.floor(Math.random() * availableSlices.length)];
             const actualPrize = state.prizes.find(p => p.id === selectedSlice.prize.id);
-            if (actualPrize) actualPrize.spinsLeft = 0; // Reset ke 0
+            if (actualPrize) actualPrize.spinsLeft = 0;
         }
     }
 
@@ -1519,7 +1717,6 @@
       const newStock = Math.max(0, (target.stock||0) - 1);
       syncStockByName(target.text, newStock);
 
-      // Jika yang dimenangkan adalah Exclusive, Reset Countdown untuk pengguna berikutnya
       if (target.type === 'exclusive') {
          state.prizes.forEach(p => {
              if (p.text.trim().toLowerCase() === target.text.trim().toLowerCase() && p.type === 'exclusive') {
@@ -1529,19 +1726,24 @@
       }
     }
 
+    // SIMPAN RIWAYAT BESERTA ISO TIMESTAMP LENGKAP (Memungkinkan Pencatatan Harian)
     state.history.unshift({
       id: uid(),
       participant: participantName,
       prize: (winner.type === 'exclusive' ? '⭐ ' : '') + winner.text,
       time: new Date().toISOString()
     });
-    
-    if(state.history.length > 200) state.history = state.history.slice(0, 200);
 
     participantInput.value = '';
 
     renderAll();
     saveState();
+
+    // MEMUTAR SOUND JIKA HADIAH EXCLUSIVE
+    if (winner.type === 'exclusive') {
+      playPrizeSound(winner.soundData);
+    }
+
     showWinner(participantName, winner.text);
   }
 
