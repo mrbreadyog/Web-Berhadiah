@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Roda Undian Cloud Responsive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12131A;
+    --panel:#1B1D29;
+    --panel-2:#20222F;
+    --border:#2C2F42;
+    --gold:#FFC93C;
+    --red:#E8483C;
+    --teal:#3FB8AF;
+    --violet:#8C6FE6;
+    --coral:#FF8B5E;
+    --sky:#5EC6FF;
+    --cream:#F5F1E8;
+    --muted:#9C9CB4;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0; width: 100%; overflow-x: hidden;}
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, #23263a 0%, transparent 55%),
+      radial-gradient(ellipse at 100% 0%, #1a2530 0%, transparent 50%),
+      var(--bg);
+    color:var(--cream);
+    font-family:'Manrope',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  
+  /* --- MODE SELECTOR STYLES --- */
+  #modeSelector {
+    position: fixed; inset: 0; background: var(--bg); display: flex; 
+    flex-direction: column; align-items: center; justify-content: center; 
+    gap: 20px; z-index: 100; padding: 16px;
+  }
+  .mode-box {
+    background: var(--panel); border: 1px solid var(--border); padding: 30px 24px;
+    border-radius: var(--radius); text-align: center; max-width: 400px; width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .mode-box h2 { font-family: 'Anton', sans-serif; color: var(--gold); letter-spacing: 1px; margin-top: 0; font-size: 26px;}
+  .mode-box p { color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.4;}
+  
+  .admin-section {
+    background: rgba(0,0,0,0.25); border: 1px solid var(--border);
+    padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: left;
+  }
+  .admin-section h3 { margin-top: 0; font-size: 12px; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-family: 'Space Mono', monospace;}
+  
+  .mode-box input[type="password"] {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--cream);
+    border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; font-size: 16px; font-family: 'Manrope',sans-serif;
+  }
+  .mode-box input[type="password"]:focus { outline: none; border-color: var(--teal); }
+  
+  .btn-mode {
+    display: block; width: 100%; padding: 14px; font-weight: 800;
+    border: none; border-radius: 8px; cursor: pointer; font-size: 15px; text-transform: uppercase;
+    transition: filter 0.2s; touch-action: manipulation;
+  }
+  .btn-mode:hover { filter: brightness(1.1); }
+  
+  .btn-mode-admin { background: var(--teal); color: #0d2321; }
+  .btn-mode-user { background: var(--gold); color: #1a1200; width: 100%; font-size: 16px;}
+  
+  .global-actions {
+    display: flex; justify-content: flex-end; margin-top: 6px; font-size: 13px;
+  }
+  .global-actions a { color: var(--muted); text-decoration: none; transition: color 0.2s; cursor: pointer; }
+  .global-actions a:hover { color: var(--gold); text-decoration: underline; }
+  
+  .divider { border: 0; height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* OVERLAY / POP-UP UMUM */
+  .overlay{position:fixed;inset:0;background:rgba(10,10,14,.9);display:none;align-items:center;justify-content:center;z-index:150;padding:16px;}
+  .overlay.show{display:flex;}
+
+  /* POP-UP CARD COMMON */
+  .auth-card, .edit-card {
+    background:linear-gradient(180deg,#20222F,#181A24);border:1px solid var(--border);
+    border-radius:20px;padding:24px 20px;text-align:left;max-width:420px;width:100%;position:relative;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+  }
+  .auth-card h2, .edit-card h2 { font-family: 'Anton', sans-serif; color: var(--gold); margin-top:0; margin-bottom: 18px; font-size:22px; text-align:center; letter-spacing:1px;}
+  .auth-card input, .edit-card input, .edit-card select {
+    width: 100%; background: var(--panel); border: 1px solid var(--border); color: var(--cream);
+    border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; font-size: 14px; font-family: 'Manrope', sans-serif;
+  }
+  .auth-card input:focus, .edit-card input:focus, .edit-card select:focus { outline: none; border-color: var(--teal); }
+  .auth-card button.btn-primary, .edit-card button.btn-primary {
+    width: 100%; background: var(--teal); border: none; color: #0d2321; font-weight: 800;
+    padding: 12px; border-radius: 10px; cursor: pointer; font-size: 14px; text-transform: uppercase; margin-bottom: 8px; touch-action: manipulation;
+  }
+  .auth-card button.btn-secondary, .edit-card button.btn-secondary {
+    width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); font-weight: 600;
+    padding: 10px; border-radius: 10px; cursor: pointer; font-size: 13px; touch-action: manipulation;
+  }
+
+  /* Form Group inside Modal */
+  .form-group { margin-bottom: 12px; }
+  .form-group label { display: block; font-size: 11px; font-family: 'Space Mono', monospace; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
+  .time-range-group { display: flex; gap: 8px; align-items: center; }
+
+  /* --- VIEW LOGIC STYLES --- */
+  #appContent { display: none; }
+  body.mode-user .side-col { display: none !important; }
+  body.mode-user main { grid-template-columns: 1fr !important; justify-items: center; width: 100%; }
+  body.mode-user header .sync-badge { display: flex !important; }
+  
+  body.mode-admin .wheel-col { display: none !important; }
+  body.mode-admin main { grid-template-columns: 1fr !important; max-width: 600px; margin: 0 auto; width: 100%; }
+  
+  .wrap{max-width:1100px;margin:0 auto;padding:16px 12px 60px;}
+
+  header{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    flex-wrap:wrap;
+    padding:6px 4px 16px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:20px;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);}
+  
+  .btn-back {
+    background: var(--panel); border: 1px solid var(--border); color: var(--cream);
+    padding: 6px 12px; border-radius: 8px; font-size: 12px; font-family: 'Space Mono', monospace;
+    cursor: pointer; transition: all 0.2s; touch-action: manipulation;
+  }
+  .btn-back:hover { background: var(--panel-2); border-color: var(--gold); color: var(--gold); }
+
+  h1{
+    font-family:'Anton',sans-serif;font-weight:400;
+    font-size:clamp(22px,4vw,30px);letter-spacing:0.5px;margin:0;text-transform:uppercase;
+  }
+  .header-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sync-badge, .time-badge{
+    display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;
+    color:var(--muted);background:var(--panel);border:1px solid var(--border);
+    padding:6px 10px;border-radius:999px;
+  }
+  .time-badge { color: var(--gold); border-color: rgba(255,201,60,0.3); }
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);}
+  .sync-dot.pulse{animation:pulse 1s ease-out;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,184,175,.6);}100%{box-shadow:0 0 0 10px rgba(63,184,175,0);}}
+
+  main{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start;}
+  @media (max-width:860px){main{grid-template-columns:1fr;}}
+
+  .wheel-col{display:flex;flex-direction:column;align-items:center;padding-top:4px; width: 100%;}
+  .wheel-stage{position:relative;width:min(360px,82vw);height:min(360px,82vw);margin-bottom:18px;}
+  .bulb-ring{position:absolute;inset:0;}
+  .bulb{
+    position:absolute;width:8px;height:8px;border-radius:50%;background:var(--gold);
+    box-shadow:0 0 5px 1px rgba(255,201,60,.5);transform:translate(-50%,-50%);
+    opacity:.35;animation:bulb-glow 2.4s ease-in-out infinite;
+  }
+  @keyframes bulb-glow{0%,100%{opacity:.25;box-shadow:0 0 4px 0 rgba(255,201,60,.3);}50%{opacity:1;box-shadow:0 0 10px 2px rgba(255,201,60,.8);}}
+  .wheel-stage.spinning .bulb{animation-duration:.5s;}
+
+  .pointer{
+    position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:0;height:0;z-index:5;
+    border-left:12px solid transparent;border-right:12px solid transparent;border-top:22px solid var(--red);
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));
+  }
+  .wheel-svg{position:absolute;inset:8%;filter:drop-shadow(0 6px 20px rgba(0,0,0,.5));}
+  .hub{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:15%;height:15%;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff8e0, var(--gold) 60%, #d69f1e 100%);
+    border:3px solid #12131A;box-shadow:0 3px 10px rgba(0,0,0,.5);z-index:4;
+  }
+  .stage-empty-msg{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;
+    color:var(--muted);font-size:12px;text-align:center;width:60%;display:none;
+  }
+
+  .participant-box{width:min(320px,90vw);margin-bottom:12px;}
+  .participant-box label{
+    display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;color:var(--gold);margin-bottom:6px;
+  }
+  .participant-box input{
+    width:100%;background:var(--panel);border:1px solid var(--border);color:var(--cream);
+    border-radius:10px;padding:12px 14px;font-size:16px;font-family:'Manrope',sans-serif;
+  }
+  .participant-box input:focus{outline:none;border-color:var(--gold);}
+
+  .spin-btn{
+    font-family:'Anton',sans-serif;font-size:18px;letter-spacing:1px;text-transform:uppercase;
+    color:#1a1200;background:linear-gradient(180deg,#ffd75e,var(--gold));border:none;border-radius:12px;
+    padding:14px 40px;cursor:pointer;box-shadow:0 4px 0 #b8860f, 0 8px 18px rgba(255,201,60,.25);
+    transition:transform .08s ease; touch-action: manipulation;
+  }
+  .spin-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #b8860f;}
+  .spin-btn:disabled{background:#3a3c4a;color:#75778a;box-shadow:none;cursor:not-allowed;}
+  .hint{color:var(--muted);font-size:12px;margin-top:8px;text-align:center;min-height:16px;padding:0 10px;}
+
+  .side-col { width: 100%; }
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
+  .panel h2{
+    font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--gold);margin:0 0 12px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .count-chip{background:var(--panel-2);color:var(--muted);border-radius:999px;padding:2px 8px;font-size:11px;}
+
+  /* Form Tambah Hadiah Baru */
+  .add-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .add-row{display:flex;gap:8px; flex-wrap: wrap;}
+  .add-row input[type=text]{
+    flex:1;min-width:140px;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);
+    border-radius:9px;padding:10px 12px;font-size:14px;font-family:'Manrope',sans-serif;
+  }
+  .add-row input[type=number]{
+    width:64px;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);
+    border-radius:9px;padding:10px 6px;font-size:14px;text-align:center;font-family:'Manrope',sans-serif;
+  }
+  .add-row select {
+    background:var(--panel-2);border:1px solid var(--border);color:var(--gold);
+    border-radius:9px;padding:10px 8px;font-size:13px;font-family:'Manrope',sans-serif; font-weight: 600;
+  }
+  .add-row input:focus, .add-row select:focus {outline:none;border-color:var(--gold);}
+  
+  .exclusive-time-box {
+    display: none; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.2); 
+    border: 1px dashed var(--border); padding: 12px; border-radius: 8px; font-size: 12px;
+  }
+  .exclusive-time-box.show { display: flex; }
+  .exclusive-time-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .exclusive-time-box input[type=time], .exclusive-time-box input[type=number] {
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--cream);
+    border-radius: 6px; padding: 4px 8px; font-family: 'Space Mono', monospace; font-size: 12px;
+  }
+  
+  .btn-add-submit {
+    background:var(--teal);border:none;color:#0d2321;font-weight:700;border-radius:9px;
+    padding:10px 16px;cursor:pointer;font-size:14px; touch-action: manipulation; transition: filter 0.2s;
+  }
+  .btn-add-submit:hover { filter: brightness(1.1); }
+
+  .bulk-toggle{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;padding:4px 0 0;}
+  .bulk-area{display:none;margin-top:8px;gap:8px;flex-direction:column;}
+  .bulk-area.show{display:flex;}
+  .bulk-area textarea{
+    background:var(--panel-2);border:1px solid var(--border);color:var(--cream);border-radius:9px;
+    padding:10px;font-size:13px;font-family:'Manrope',sans-serif;resize:vertical;min-height:70px;
+  }
+  .bulk-area .bulk-hint{font-size:11px;color:var(--muted); line-height: 1.4;}
+  .bulk-area button{align-self:flex-end;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer; touch-action: manipulation;}
+
+  /* PRIZES LIST & DRAG STYLES */
+  .prizes-list{list-style:none;margin:12px 0 0;padding:0;max-height:280px;overflow-y:auto;}
+  .prizes-list li{
+    display:flex;align-items:center;gap:8px;padding:10px 8px;border-bottom:1px solid var(--border);
+    font-size:13px; transition: background 0.15s, border-color 0.15s, opacity 0.15s; user-select: none;
+    border-radius: 6px; margin-bottom: 2px;
+  }
+  .prizes-list li:last-child{border-bottom:none;}
+  .prizes-list li.stock-empty{opacity:.45;}
+  .prizes-list li.dragging{opacity: 0.3; background: var(--panel-2); border-style: dashed;}
+  .prizes-list li.drag-over{border-top: 2px solid var(--teal); background: rgba(63, 184, 175, 0.15);}
+
+  .drag-handle {
+    cursor: grab; color: var(--muted); font-size: 14px; padding: 2px 4px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: color 0.2s; touch-action: none;
+  }
+  .drag-handle:hover { color: var(--gold); }
+  .drag-handle:active { cursor: grabbing; color: var(--gold); }
+
+  .swatch{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .prize-info { flex:1; min-width:0; display: flex; flex-direction: column; gap: 2px; }
+  .prize-title-row { display: flex; align-items: center; gap: 6px; }
+  .p-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap; font-weight: 600;}
+  
+  .badge-type { font-size: 9px; padding: 1px 6px; border-radius: 4px; font-family: 'Space Mono', monospace; text-transform: uppercase; font-weight: 700; }
+  .badge-std { background: rgba(94, 198, 255, 0.2); color: var(--sky); border: 1px solid rgba(94, 198, 255, 0.3); }
+  .badge-exc { background: rgba(255, 201, 60, 0.2); color: var(--gold); border: 1px solid rgba(255, 201, 60, 0.4); }
+  .badge-habis{background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:999px;margin-left:4px;}
+  
+  .prize-schedule { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; display: flex; align-items: center; gap: 4px; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .status-active { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+  .status-inactive { background: var(--muted); }
+
+  .stock-control{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+  .stock-control button{
+    width:22px;height:22px;border-radius:5px;background:var(--panel-2);border:1px solid var(--border);
+    color:var(--cream);cursor:pointer;font-size:12px;line-height:1;padding:0; touch-action: manipulation;
+  }
+  .stock-control input{
+    width:34px;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);
+    border-radius:5px;padding:2px 2px;font-size:11px;text-align:center;font-family:'Space Mono',monospace;
+  }
+
+  .action-btns { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  .btn-icon { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 4px; border-radius: 4px; transition: color 0.2s; touch-action: manipulation; }
+  .btn-icon:hover { color: var(--cream); }
+  .btn-icon.edit-btn:hover { color: var(--gold); }
+  .btn-icon.rm-btn:hover { color: var(--red); }
+
+  .empty-note{color:var(--muted);font-size:13px;padding:8px 0;}
+
+  /* SEPARATE RESET BUTTONS */
+  .reset-btn{width:100%;margin-top:12px;background:none;border:1px dashed var(--border);color:var(--muted);border-radius:9px;padding:9px;font-size:12px;cursor:pointer; touch-action: manipulation; transition: all 0.2s;}
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+  .reset-btn.confirming{border-color:var(--red);color:#fff; background: var(--red);}
+
+  .export-btn{width:100%;margin-bottom:12px;background:var(--teal);border:none;color:#0d2321;font-weight:700;border-radius:9px;padding:10px;font-size:13px;cursor:pointer; touch-action: manipulation;}
+  .export-btn:hover{filter:brightness(1.1);}
+  .export-btn:disabled{background:#3a3c4a;color:#75778a;cursor:not-allowed;}
+
+  .ticket{background:var(--panel-2);border-left:3px solid var(--gold);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .ticket .t-main{overflow:hidden;}
+  .ticket .t-name{font-weight:700;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ticket .t-prize{font-size:12px;color:var(--gold);font-weight:600;margin-top:2px;}
+  .ticket .t-time{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px;}
+  .ticket .t-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);flex-shrink:0;}
+
+  .winner-card {
+    background:linear-gradient(180deg,#20222F,#181A24);border:1px solid var(--border);
+    border-radius:20px;padding:30px 24px;text-align:center;max-width:340px;width:100%;position:relative;overflow:hidden;
+  }
+  .winner-card .eyebrow{font-family:'Space Mono',monospace;color:var(--gold);font-size:12px;letter-spacing:1px;}
+  .winner-card .w-name{font-family:'Anton',sans-serif;font-size:clamp(22px,6vw,30px);margin:10px 0 16px;word-break:break-word;text-transform:uppercase;}
+  .winner-card button{background:var(--gold);border:none;color:#1a1200;font-weight:800;padding:10px 24px;border-radius:10px;cursor:pointer;font-size:14px; touch-action: manipulation;}
+  .confetti-piece{position:absolute;top:-10px;width:8px;height:14px;opacity:.9;animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(380px) rotate(540deg);opacity:0;}}
+
+  ::-webkit-scrollbar{width:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
+</style>
+</head>
+<body>
+
+<!-- MENU UTAMA / PEMILIHAN MODE -->
+<div id="modeSelector">
+  <div class="mode-box">
+    <h2>PILIH TAMPILAN</h2>
+    <p>Silakan masuk sebagai Admin atau Peserta.</p>
+    
+    <!-- Bagian Login Admin -->
+    <div class="admin-section">
+      <h3>Masuk Sebagai Admin</h3>
+      <input type="password" id="adminPwdInput" placeholder="Password Admin">
+      <button class="btn-mode btn-mode-admin" id="loginBtn">Buka Layar Admin</button>
+      <div class="global-actions">
+        <a id="showChangePwdLink">Ganti Password</a>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <button class="btn-mode btn-mode-user" id="userBtn">Buka Layar Peserta</button>
+  </div>
+</div>
+
+<!-- POP-UP NOTIFIKASI MODAL CUSTOM -->
+<div class="overlay" id="noticeOverlay">
+  <div class="auth-card" style="text-align: center;">
+    <h2 id="noticeTitle">INFORMASI</h2>
+    <p id="noticeMessage" style="color: var(--cream); font-size: 14px; margin-bottom: 20px; line-height: 1.5;"></p>
+    <button class="btn-primary" id="noticeOkBtn">OK</button>
+  </div>
+</div>
+
+<!-- POP-UP GANTI PASSWORD -->
+<div class="overlay" id="changePwdOverlay">
+  <div class="auth-card">
+    <h2>GANTI PASSWORD</h2>
+    <input type="password" id="oldPwdInput" placeholder="Password Lama">
+    <input type="password" id="newPwdInput" placeholder="Password Baru">
+    <input type="password" id="newPwdConfirm" placeholder="Konfirmasi Password Baru">
+    <button class="btn-primary" id="savePwdBtn">Simpan Password</button>
+    <button class="btn-secondary" id="cancelChangeBtn">Batal</button>
+  </div>
+</div>
+
+<!-- POP-UP EDIT HADIAH -->
+<div class="overlay" id="editPrizeOverlay">
+  <div class="edit-card">
+    <h2>EDIT HADIAH</h2>
+    <input type="hidden" id="editPrizeId">
+    
+    <div class="form-group">
+      <label for="editPrizeName">Nama Hadiah</label>
+      <input type="text" id="editPrizeName" placeholder="Masukkan nama hadiah" maxlength="40">
+    </div>
+
+    <div class="form-group">
+      <label for="editPrizeStock">Stok Hadiah</label>
+      <input type="number" id="editPrizeStock" min="0" placeholder="Stok">
+    </div>
+
+    <div class="form-group">
+      <label for="editPrizeType">Tipe Hadiah</label>
+      <select id="editPrizeType">
+        <option value="standard">Standard (Kapan Saja)</option>
+        <option value="exclusive">Exclusive (Jam Tertentu & CD Spin)</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="editExclusiveTimeGroup" style="display: none;">
+      <label>Jam Aktif Exclusive (WIB - 24:00)</label>
+      <div class="time-range-group">
+        <input type="time" id="editStartTime" value="12:00">
+        <span style="color: var(--muted);">s/d</span>
+        <input type="time" id="editEndTime" value="23:59">
+      </div>
+      
+      <label style="margin-top: 10px;">Countdown Putaran (Spins)</label>
+      <input type="number" id="editSpinReq" min="1" value="5">
+    </div>
+
+    <button class="btn-primary" id="saveEditPrizeBtn">Simpan Perubahan</button>
+    <button class="btn-secondary" id="cancelEditPrizeBtn">Batal</button>
+  </div>
+</div>
+
+<!-- APLIKASI UTAMA -->
+<div class="wrap" id="appContent">
+  <header>
+    <div class="header-left">
+      <button class="btn-back" id="backToMenuBtn" title="Kembali ke Menu Utama">← Kembali</button>
+      <div class="brand"><div class="dot"></div><h1>Roda Undian</h1></div>
+    </div>
+    <div class="header-badges">
+      <div class="time-badge">
+        <span>🕒</span>
+        <span id="wibClockDisplay">00:00:00 WIB</span>
+      </div>
+      <div class="sync-badge">
+        <div class="sync-dot" id="syncDot"></div>
+        <span id="syncText">Cloud Sync</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wheel-col">
+      <div class="wheel-stage" id="wheelStage">
+        <div class="bulb-ring" id="bulbRing"></div>
+        <div class="pointer"></div>
+        <svg class="wheel-svg" id="wheelSvg" viewBox="0 0 400 400">
+          <g id="wheelRotor" transform="rotate(0 200 200)"><g id="slices"></g></g>
+        </svg>
+        <div class="hub"></div>
+        <div class="stage-empty-msg" id="stageEmptyMsg">Semua hadiah yang aktif sudah habis</div>
+      </div>
+
+      <div class="participant-box">
+        <label for="participantInput">Nama Peserta</label>
+        <input type="text" id="participantInput" placeholder="Masukkan nama sebelum memutar" maxlength="40">
+      </div>
+
+      <button class="spin-btn" id="spinBtn">Putar Roda</button>
+      <div class="hint" id="hint"></div>
+    </div>
+
+    <div class="side-col">
+      <!-- PANEL HADIAH -->
+      <div class="panel">
+        <h2>Hadiah <span class="count-chip" id="prizeCount">0</span></h2>
+        
+        <div class="add-form">
+          <div class="add-row">
+            <input type="text" id="prizeNameInput" placeholder="Nama hadiah…" maxlength="40">
+            <input type="number" id="prizeStockInput" placeholder="Stok" min="1" value="1">
+            <select id="prizeTypeSelect">
+              <option value="standard">Standard</option>
+              <option value="exclusive">⭐ Exclusive</option>
+            </select>
+          </div>
+          
+          <div class="exclusive-time-box" id="newExclusiveTimeBox">
+            <div class="exclusive-time-row">
+                <span style="color: var(--gold); font-weight:700;">🕒 Jam Aktif WIB:</span>
+                <input type="time" id="newStartTime" value="12:00">
+                <span>s/d</span>
+                <input type="time" id="newEndTime" value="23:59">
+            </div>
+            <div class="exclusive-time-row">
+                <span style="color: var(--gold); font-weight:700;">🔄 Countdown Spin:</span>
+                <input type="number" id="newSpinReq" value="5" min="1" style="width: 70px;">
+            </div>
+          </div>
+
+          <button class="btn-add-submit" id="addBtn">+ Tambah Hadiah</button>
+        </div>
+
+        <button class="bulk-toggle" id="bulkToggle">+ Tambah Banyak (Bulk)</button>
+        <div class="bulk-area" id="bulkArea">
+          <textarea id="bulkInput" placeholder="Satu hadiah per baris"></textarea>
+          <div class="bulk-hint">Format: <code>Nama Hadiah, Stok, Tipe(std/exc), JamMulai, JamSelesai, JmlCountdown</code><br>Contoh: <code>Voucher 100rb, 5, exc, 14:00, 18:00, 10</code></div>
+          <button id="bulkAddBtn">Tambahkan semua</button>
+        </div>
+
+        <ul class="prizes-list" id="prizesList"></ul>
+        
+        <!-- SEPARATE RESET PRIZES BUTTON -->
+        <button class="reset-btn" id="resetPrizesBtn">🗑️ Hapus Semua Hadiah</button>
+      </div>
+
+      <!-- PANEL RIWAYAT -->
+      <div class="panel">
+        <h2>Riwayat Undian <span class="count-chip" id="historyCount">0/200</span></h2>
+        <!-- SEPARATE RESET HISTORY BUTTON -->
+        <button class="reset-btn" id="resetHistoryBtn" style="margin-top: 0; margin-bottom: 10px;">🧹 Hapus Semua Riwayat</button>
+        <button class="export-btn" id="exportExcelBtn" disabled>📥 Download Riwayat (Excel/CSV)</button>
+        <div id="historyList"></div>
+        <div class="empty-note" id="historyEmpty">Belum ada undian.</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- POP-UP PEMENANG -->
+<div class="overlay" id="overlayWinner">
+  <div class="winner-card" id="winnerCard">
+    <div class="eyebrow" id="winnerEyebrow">Pemenangnya adalah</div>
+    <div class="w-name" id="winnerName">—</div>
+    <button id="closeOverlay">Tutup</button>
+  </div>
+</div>
+
+<!-- FIREBASE SDK & SKRIP UTAMA -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB3ncagWuBOyK0IbDIV_qVioMah4zuYi9w",
+    authDomain: "db-spinner-d37e5.firebaseapp.com",
+    databaseURL: "https://db-spinner-d37e5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "db-spinner-d37e5",
+    storageBucket: "db-spinner-d37e5.appspot.com",
+    messagingSenderId: "709523591813",
+    appId: "1:709523591813:web:8bc24bb1e642131a9c4fec",
+    measurementId: "G-HMDGYXSMGS"
+  };
+
+  let db = null;
+  let useCloud = false;
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    db = getDatabase(app);
+    useCloud = true;
+  } catch (e) {
+    console.log("Mode cloud tidak aktif, beralih ke penyimpanan lokal.");
+  }
+
+  const STORAGE_KEY = 'roda-undian-state-v7-cd';
+  const PWD_KEY = 'roda-undian-pwd';
+  const PALETTE = ['#FFC93C','#E8483C','#3FB8AF','#8C6FE6','#FF8B5E','#5EC6FF'];
+  const CENTER = 200, RADIUS = 190;
+
+  // Global State
+  let state = { prizes: [], history: [] };
+  let currentAngle = 0;
+  let isSpinning = false;
+  let sliceRanges = []; 
+  let isInitialLoad = true;
+  let draggedIndex = null;
+
+  // DOM Elements
+  const el = (id) => document.getElementById(id);
+  const prizesListEl = el('prizesList');
+  const prizeCountEl = el('prizeCount');
+  const historyListEl = el('historyList');
+  const historyCountEl = el('historyCount');
+  const historyEmptyEl = el('historyEmpty');
+  const spinBtn = el('spinBtn');
+  const hintEl = el('hint');
+  const syncText = el('syncText');
+  const syncDot = el('syncDot');
+  const wheelStage = el('wheelStage');
+  const participantInput = el('participantInput');
+  const stageEmptyMsg = el('stageEmptyMsg');
+  const exportExcelBtn = el('exportExcelBtn');
+  const wibClockDisplay = el('wibClockDisplay');
+
+  function showNotice(message, title = 'INFORMASI') {
+    el('noticeTitle').textContent = title;
+    el('noticeMessage').textContent = message;
+    el('noticeOverlay').classList.add('show');
+  }
+  el('noticeOkBtn').addEventListener('click', () => {
+    el('noticeOverlay').classList.remove('show');
+  });
+
+  function getWIBDate() {
+    const now = new Date();
+    const wibString = now.toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+    return new Date(wibString);
+  }
+
+  function updateWIBClock() {
+    const wib = getWIBDate();
+    const hrs = String(wib.getHours()).padStart(2, '0');
+    const mins = String(wib.getMinutes()).padStart(2, '0');
+    const secs = String(wib.getSeconds()).padStart(2, '0');
+    if (wibClockDisplay) {
+      wibClockDisplay.textContent = `${hrs}:${mins}:${secs} WIB`;
+    }
+  }
+  setInterval(updateWIBClock, 1000);
+  updateWIBClock();
+
+  function getWIBMinutes() {
+    const wib = getWIBDate();
+    return wib.getHours() * 60 + wib.getMinutes();
+  }
+
+  function parseTimeToMinutes(timeStr) {
+    if (!timeStr) return 0;
+    const parts = timeStr.split(':');
+    return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
+  }
+
+  function isPrizeInWIBWindow(prize) {
+    if (prize.type !== 'exclusive') return true;
+    const startTime = prize.startTime || '00:00';
+    const endTime = prize.endTime || '23:59';
+    
+    const currentMin = getWIBMinutes();
+    const startMin = parseTimeToMinutes(startTime);
+    const endMin = parseTimeToMinutes(endTime);
+
+    if (startMin <= endMin) {
+      return currentMin >= startMin && currentMin <= endMin;
+    } else {
+      return currentMin >= startMin || currentMin <= endMin;
+    }
+  }
+
+  function getDbRef() {
+    return ref(db, 'roda_undian_data/app_state');
+  }
+
+  if (useCloud && db) {
+    syncText.textContent = "Terhubung Cloud";
+    onValue(getDbRef(), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        state.prizes = data.prizes || [];
+        state.history = data.history || [];
+      } else if (isInitialLoad) {
+        seedDefaultState();
+        saveState();
+      }
+      isInitialLoad = false;
+      if (!isSpinning) renderAll();
+      flashSyncDot();
+    }, (error) => {
+      initLocalStorage();
+    });
+  } else {
+    initLocalStorage();
+  }
+
+  function initLocalStorage() {
+    syncText.textContent = "Mode Lokal";
+    try {
+      const res = localStorage.getItem(STORAGE_KEY);
+      if (res) {
+        state = JSON.parse(res);
+      } else {
+        seedDefaultState();
+        saveState();
+      }
+    } catch(e) {
+      seedDefaultState();
+    }
+    if (!isSpinning) renderAll();
+  }
+
+  function seedDefaultState() {
+    state = {
+      prizes: [
+        {id: uid(), text:'Voucher 50rb', stock:10, type:'standard'},
+        {id: uid(), text:'Voucher 100rb', stock:5, type:'standard'},
+        {id: uid(), text:'Grand Prize Exclusive', stock:2, type:'exclusive', startTime:'00:00', endTime:'23:59', spinReq:5, spinsLeft:5}
+      ],
+      history: []
+    };
+  }
+
+  async function saveState() {
+    try {
+      if (useCloud && db) {
+        await set(getDbRef(), {
+          prizes: state.prizes,
+          history: state.history,
+          updatedAt: Date.now()
+        });
+        syncText.textContent = "Terhubung Cloud";
+      } else {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+      flashSyncDot();
+    } catch (e) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+  }
+
+  window.addEventListener('storage', (e) => {
+    if(!useCloud && e.key === STORAGE_KEY && !isSpinning) {
+      const res = localStorage.getItem(STORAGE_KEY);
+      if(res) {
+        state = JSON.parse(res);
+        renderAll();
+        flashSyncDot();
+      }
+    }
+  });
+
+  function flashSyncDot() {
+    syncDot.classList.remove('pulse');
+    void syncDot.offsetWidth;
+    syncDot.classList.add('pulse');
+  }
+
+  function getAdminPwd() {
+    return localStorage.getItem(PWD_KEY) || 'support123';
+  }
+  function setAdminPwd(pwd) {
+    localStorage.setItem(PWD_KEY, pwd);
+  }
+
+  window.setMode = function(mode) {
+    el('modeSelector').style.display = 'none';
+    el('appContent').style.display = 'block';
+    document.body.classList.remove('mode-admin', 'mode-user');
+    document.body.classList.add('mode-' + mode);
+  };
+
+  el('userBtn').addEventListener('click', () => setMode('user'));
+  el('loginBtn').addEventListener('click', processLogin);
+  el('adminPwdInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') processLogin(); });
+
+  el('backToMenuBtn').addEventListener('click', () => {
+    el('appContent').style.display = 'none';
+    el('modeSelector').style.display = 'flex';
+    document.body.classList.remove('mode-admin', 'mode-user');
+    el('adminPwdInput').value = '';
+  });
+
+  function processLogin() {
+    const inputPwd = el('adminPwdInput').value;
+    if (inputPwd === getAdminPwd()) {
+      setMode('admin');
+    } else {
+      showNotice('Password admin salah!', 'AKSES DITOLAK');
+    }
+  }
+
+  el('showChangePwdLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    el('changePwdOverlay').classList.add('show');
+    el('oldPwdInput').value = '';
+    el('newPwdInput').value = '';
+    el('newPwdConfirm').value = '';
+  });
+
+  el('cancelChangeBtn').addEventListener('click', () => {
+    el('changePwdOverlay').classList.remove('show');
+  });
+
+  el('savePwdBtn').addEventListener('click', () => {
+    const oldPwd = el('oldPwdInput').value;
+    const newPwd = el('newPwdInput').value.trim();
+    const confirmPwd = el('newPwdConfirm').value.trim();
+
+    if(oldPwd !== getAdminPwd()) {
+      showNotice('Password lama tidak sesuai!', 'GAGAL');
+      return;
+    }
+    if(newPwd === '') {
+      showNotice('Password baru tidak boleh kosong!', 'GAGAL');
+      return;
+    }
+    if(newPwd !== confirmPwd) {
+      showNotice('Konfirmasi password tidak cocok!', 'GAGAL');
+      return;
+    }
+
+    setAdminPwd(newPwd);
+    showNotice('Password admin berhasil diubah!', 'BERHASIL');
+    el('changePwdOverlay').classList.remove('show');
+  });
+
+  function uid(){
+    return (crypto.randomUUID ? crypto.randomUUID() : Date.now()+'-'+Math.random().toString(16).slice(2));
+  }
+
+  function syncStockByName(name, newStock) {
+    const norm = name.trim().toLowerCase();
+    state.prizes.forEach(p => {
+      if (p.text.trim().toLowerCase() === norm) {
+        p.stock = newStock;
+      }
+    });
+  }
+
+  function renderAll(){
+    renderPrizes();
+    renderWheel();
+    renderHistory();
+    updateSpinAvailability();
+  }
+
+  el('prizeTypeSelect').addEventListener('change', (e) => {
+    if (e.target.value === 'exclusive') {
+      el('newExclusiveTimeBox').classList.add('show');
+    } else {
+      el('newExclusiveTimeBox').classList.remove('show');
+    }
+  });
+
+  function renderPrizes(){
+    prizeCountEl.textContent = state.prizes.length;
+    prizesListEl.innerHTML = '';
+    if(state.prizes.length === 0){
+      prizesListEl.innerHTML = '<div class="empty-note">Belum ada hadiah. Tambahkan di atas.</div>';
+      return;
+    }
+    
+    state.prizes.forEach((p, i)=>{
+      const li = document.createElement('li');
+      li.setAttribute('draggable', 'true');
+      li.dataset.index = i;
+      
+      const isOutStock = (p.stock||0) <= 0;
+      const isActiveWIB = isPrizeInWIBWindow(p);
+      
+      if(isOutStock) li.classList.add('stock-empty');
+
+      const dragHandle = document.createElement('span');
+      dragHandle.className = 'drag-handle';
+      dragHandle.innerHTML = '⋮⋮';
+      dragHandle.title = 'Geser untuk mengurutkan';
+
+      const sw = document.createElement('div');
+      sw.className='swatch'; sw.style.background = PALETTE[i % PALETTE.length];
+
+      const prizeInfo = document.createElement('div');
+      prizeInfo.className = 'prize-info';
+
+      const titleRow = document.createElement('div');
+      titleRow.className = 'prize-title-row';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'p-name';
+      nameSpan.textContent = p.text;
+      titleRow.appendChild(nameSpan);
+
+      const typeBadge = document.createElement('span');
+      typeBadge.className = 'badge-type ' + (p.type === 'exclusive' ? 'badge-exc' : 'badge-std');
+      typeBadge.textContent = p.type === 'exclusive' ? '⭐ Exclusive' : 'Standard';
+      titleRow.appendChild(typeBadge);
+
+      if(isOutStock){
+        const badge = document.createElement('span');
+        badge.className='badge-habis'; badge.textContent='HABIS';
+        titleRow.appendChild(badge);
+      }
+      prizeInfo.appendChild(titleRow);
+
+      if (p.type === 'exclusive') {
+        const schedDiv = document.createElement('div');
+        schedDiv.className = 'prize-schedule';
+        const dot = document.createElement('span');
+        dot.className = 'status-dot ' + (isActiveWIB ? 'status-active' : 'status-inactive');
+        
+        const timeText = `${p.startTime || '00:00'} - ${p.endTime || '23:59'} WIB`;
+        const statusText = isActiveWIB ? `[Aktif: ${timeText}]` : `[Luar Jam: ${timeText}]`;
+        
+        schedDiv.appendChild(dot);
+        schedDiv.appendChild(document.createTextNode(' ' + statusText));
+        prizeInfo.appendChild(schedDiv);
+        
+        // Menampilkan Info Sisa Countdown (Spin)
+        const countdownDiv = document.createElement('div');
+        countdownDiv.className = 'prize-schedule';
+        countdownDiv.style.marginTop = '2px';
+        const currentSpins = typeof p.spinsLeft !== 'undefined' ? p.spinsLeft : (p.spinReq || 0);
+        const totalSpins = p.spinReq || 0;
+        countdownDiv.innerHTML = `<span class="badge-type badge-exc" style="font-size:8px; border:none; padding:1px 4px; opacity:0.8;">🔄 CD: ${currentSpins}/${totalSpins} Spin</span>`;
+        prizeInfo.appendChild(countdownDiv);
+      }
+
+      const stockCtl = document.createElement('div');
+      stockCtl.className='stock-control';
+      const minus = document.createElement('button'); minus.textContent='−';
+      minus.addEventListener('click', ()=>adjustStock(p.id,-1));
+      const num = document.createElement('input');
+      num.type='number'; num.min='0'; num.value = p.stock;
+      num.addEventListener('change', ()=>setStock(p.id, parseInt(num.value,10)));
+      const plus = document.createElement('button'); plus.textContent='+';
+      plus.addEventListener('click', ()=>adjustStock(p.id,1));
+      stockCtl.appendChild(minus); stockCtl.appendChild(num); stockCtl.appendChild(plus);
+
+      const actionBtns = document.createElement('div');
+      actionBtns.className = 'action-btns';
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn-icon edit-btn';
+      editBtn.innerHTML = '✏️';
+      editBtn.title = 'Edit Hadiah';
+      editBtn.addEventListener('click', () => openEditModal(p));
+
+      const rm = document.createElement('button');
+      rm.className='btn-icon rm-btn'; rm.innerHTML='✕'; rm.title='Hapus Hadiah';
+      rm.addEventListener('click', ()=>removePrize(p.id));
+
+      actionBtns.appendChild(editBtn);
+      actionBtns.appendChild(rm);
+
+      // Drag and Drop Events
+      li.addEventListener('dragstart', (e) => {
+        draggedIndex = i;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', i);
+        setTimeout(() => li.classList.add('dragging'), 0);
+      });
+      li.addEventListener('dragend', () => {
+        li.classList.remove('dragging');
+        document.querySelectorAll('#prizesList li').forEach(el => el.classList.remove('drag-over'));
+        draggedIndex = null;
+      });
+      li.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+      li.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        if (draggedIndex !== null && draggedIndex !== i) {
+          li.classList.add('drag-over');
+        }
+      });
+      li.addEventListener('dragleave', () => {
+        li.classList.remove('drag-over');
+      });
+      li.addEventListener('drop', (e) => {
+        e.preventDefault();
+        li.classList.remove('drag-over');
+        if (draggedIndex !== null && draggedIndex !== i) {
+          reorderPrizes(draggedIndex, i);
+        }
+      });
+
+      // Touch Events for Drag (Mobile)
+      dragHandle.addEventListener('touchstart', (e) => {
+        draggedIndex = i;
+        li.classList.add('dragging');
+      }, { passive: true });
+      dragHandle.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+        const targetLi = targetEl ? targetEl.closest('#prizesList li') : null;
+        
+        document.querySelectorAll('#prizesList li').forEach(el => el.classList.remove('drag-over'));
+        if (targetLi && targetLi !== li) {
+          targetLi.classList.add('drag-over');
+        }
+      }, { passive: false });
+      dragHandle.addEventListener('touchend', (e) => {
+        li.classList.remove('dragging');
+        const touch = e.changedTouches[0];
+        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+        const targetLi = targetEl ? targetEl.closest('#prizesList li') : null;
+        document.querySelectorAll('#prizesList li').forEach(el => el.classList.remove('drag-over'));
+
+        if (targetLi && draggedIndex !== null) {
+          const targetIndex = parseInt(targetLi.dataset.index, 10);
+          if (!isNaN(targetIndex) && targetIndex !== draggedIndex) {
+            reorderPrizes(draggedIndex, targetIndex);
+          }
+        }
+        draggedIndex = null;
+      });
+
+      li.appendChild(dragHandle);
+      li.appendChild(sw);
+      li.appendChild(prizeInfo);
+      li.appendChild(stockCtl);
+      li.appendChild(actionBtns);
+      prizesListEl.appendChild(li);
+    });
+  }
+
+  function openEditModal(prize) {
+    el('editPrizeId').value = prize.id;
+    el('editPrizeName').value = prize.text;
+    el('editPrizeStock').value = prize.stock;
+    el('editPrizeType').value = prize.type || 'standard';
+    el('editStartTime').value = prize.startTime || '12:00';
+    el('editEndTime').value = prize.endTime || '23:59';
+    el('editSpinReq').value = prize.spinReq || 5;
+
+    if (prize.type === 'exclusive') {
+      el('editExclusiveTimeGroup').style.display = 'block';
+    } else {
+      el('editExclusiveTimeGroup').style.display = 'none';
+    }
+    el('editPrizeOverlay').classList.add('show');
+  }
+
+  el('editPrizeType').addEventListener('change', (e) => {
+    if (e.target.value === 'exclusive') {
+      el('editExclusiveTimeGroup').style.display = 'block';
+    } else {
+      el('editExclusiveTimeGroup').style.display = 'none';
+    }
+  });
+
+  el('cancelEditPrizeBtn').addEventListener('click', () => {
+    el('editPrizeOverlay').classList.remove('show');
+  });
+
+  el('saveEditPrizeBtn').addEventListener('click', () => {
+    const id = el('editPrizeId').value;
+    const newName = el('editPrizeName').value.trim();
+    const newStock = parseInt(el('editPrizeStock').value, 10);
+    const newType = el('editPrizeType').value;
+    const startTime = el('editStartTime').value;
+    const endTime = el('editEndTime').value;
+    const newSpinReq = parseInt(el('editSpinReq').value, 10) || 1;
+
+    if (!newName) {
+      showNotice('Nama hadiah tidak boleh kosong!', 'PERINGATAN');
+      return;
+    }
+    if (isNaN(newStock) || newStock < 0) {
+      showNotice('Stok hadiah tidak valid!', 'PERINGATAN');
+      return;
+    }
+
+    const p = state.prizes.find(item => item.id === id);
+    if (p) {
+      p.text = newName;
+      p.stock = newStock;
+      p.type = newType;
+      p.startTime = startTime;
+      p.endTime = endTime;
+      
+      if (newType === 'exclusive') {
+         p.spinReq = newSpinReq;
+         p.spinsLeft = newSpinReq; // Reset spinsLeft jika diedit
+      } else {
+         p.spinReq = null;
+         p.spinsLeft = null;
+      }
+      
+      syncStockByName(newName, newStock);
+      renderAll();
+      saveState();
+      el('editPrizeOverlay').classList.remove('show');
+      showNotice('Detail hadiah berhasil diperbarui!', 'BERHASIL');
+    }
+  });
+
+  function reorderPrizes(fromIndex, toIndex) {
+    const movedItem = state.prizes.splice(fromIndex, 1)[0];
+    state.prizes.splice(toIndex, 0, movedItem);
+    renderAll();
+    saveState();
+  }
+
+  function renderHistory(){
+    const MAX_HISTORY = 200;
+    historyCountEl.textContent = `${state.history.length}/${MAX_HISTORY}`;
+    if (state.history.length >= MAX_HISTORY) {
+      historyCountEl.style.background = 'var(--red)';
+      historyCountEl.style.color = '#fff';
+    } else {
+      historyCountEl.style.background = 'var(--panel-2)';
+      historyCountEl.style.color = 'var(--muted)';
+    }
+
+    historyListEl.innerHTML = '';
+    historyEmptyEl.style.display = state.history.length ? 'none' : 'block';
+    exportExcelBtn.disabled = state.history.length === 0;
+
+    state.history.forEach((h, idx)=>{
+      const div = document.createElement('div');
+      div.className='ticket';
+      const num = String(state.history.length - idx).padStart(3,'0');
+      div.innerHTML = `
+        <div class="t-main">
+          <div class="t-name">${escapeHtml(h.participant || '(tanpa nama)')}</div>
+          <div class="t-prize">🎁 ${escapeHtml(h.prize)}</div>
+          <div class="t-time">${formatTime(h.time)}</div>
+        </div>
+        <div class="t-num">#${num}</div>`;
+      historyListEl.appendChild(div);
+    });
+  }
+
+  exportExcelBtn.addEventListener('click', () => {
+    if (state.history.length === 0) return;
+
+    let csvContent = "No,Nama Peserta,Hadiah,Waktu\r\n";
+    state.history.forEach((h, idx) => {
+      const no = state.history.length - idx;
+      const name = `"${(h.participant || '').replace(/"/g, '""')}"`;
+      const prize = `"${(h.prize || '').replace(/"/g, '""')}"`;
+      const time = `"${formatTime(h.time)}"`;
+      csvContent += `${no},${name},${prize},${time}\r\n`;
+    });
+
+    const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `riwayat_undian_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function formatTime(iso){
+    const d = new Date(iso);
+    return d.toLocaleString('id-ID', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  }
+
+  function updateSpinAvailability(){
+    const MAX_HISTORY = 200;
+    const activeSpinnableCount = state.prizes.filter(s => (s.stock || 0) > 0).length;
+    const nameFilled = participantInput.value.trim().length > 0;
+    const isHistoryFull = state.history.length >= MAX_HISTORY;
+    
+    stageEmptyMsg.style.display = (state.prizes.length && activeSpinnableCount===0) ? 'block' : 'none';
+
+    if(isHistoryFull){
+      spinBtn.disabled = true;
+      hintEl.textContent = '⛔ Riwayat penuh (200/200). Hapus riwayat di menu Admin untuk memutar.';
+    } else if(state.prizes.length === 0 || activeSpinnableCount === 0){
+      spinBtn.disabled = true;
+      hintEl.textContent = 'Tidak ada hadiah aktif yang bisa dimenangkan saat ini (Habis).';
+    } else if(isSpinning){
+      spinBtn.disabled = true;
+      hintEl.textContent = 'Roda sedang berputar…';
+    } else if(!nameFilled){
+      spinBtn.disabled = true;
+      hintEl.textContent = 'Isi nama peserta untuk mulai memutar.';
+    } else {
+      spinBtn.disabled = false;
+      hintEl.textContent = '';
+    }
+  }
+  participantInput.addEventListener('input', updateSpinAvailability);
+
+  function renderWheel(){
+    const slicesG = el('slices');
+    slicesG.innerHTML = '';
+    sliceRanges = [];
+
+    const available = state.prizes
+      .map((p,idx)=>({...p, colorIdx: idx}))
+      .filter(p => (p.stock || 0) > 0);
+
+    if(available.length === 0){
+      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      circle.setAttribute('cx',CENTER); circle.setAttribute('cy',CENTER);
+      circle.setAttribute('r',RADIUS); circle.setAttribute('fill','#20222F');
+      circle.setAttribute('stroke','#2C2F42');
+      slicesG.appendChild(circle);
+      renderBulbs();
+      return;
+    }
+
+    // TAMPILAN RODA (Pembagian sama rata secara visual)
+    const totalSlices = available.length;
+    const segAngle = 360 / totalSlices;
+
+    let cum = -90;
+    available.forEach(p=>{
+      const start = cum, end = cum + segAngle;
+      cum = end;
+
+      sliceRanges.push({
+        id: p.id, 
+        start, 
+        end, 
+        prize: p
+      });
+
+      const startRad = start*Math.PI/180, endRad = end*Math.PI/180;
+      const x1 = CENTER + RADIUS*Math.cos(startRad), y1 = CENTER + RADIUS*Math.sin(startRad);
+      const x2 = CENTER + RADIUS*Math.cos(endRad), y2 = CENTER + RADIUS*Math.sin(endRad);
+      const largeArc = segAngle > 180 ? 1 : 0;
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', `M ${CENTER} ${CENTER} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${RADIUS} ${RADIUS} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`);
+      
+      let fillColor = PALETTE[p.colorIdx % PALETTE.length];
+      path.setAttribute('fill', fillColor);
+      path.setAttribute('stroke', '#12131A');
+      path.setAttribute('stroke-width', '2');
+      slicesG.appendChild(path);
+
+      const mid = start + segAngle/2;
+      const midRad = mid*Math.PI/180;
+      const labelR = RADIUS*0.62;
+      const lx = CENTER + labelR*Math.cos(midRad);
+      const ly = CENTER + labelR*Math.sin(midRad);
+      const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+      text.setAttribute('x', lx.toFixed(2));
+      text.setAttribute('y', ly.toFixed(2));
+      text.setAttribute('transform', `rotate(${mid.toFixed(2)} ${lx.toFixed(2)} ${ly.toFixed(2)})`);
+      text.setAttribute('text-anchor','middle');
+      text.setAttribute('dominant-baseline','middle');
+      text.setAttribute('font-size', totalSlices > 6 ? 11 : 13);
+      text.setAttribute('font-family',"'Manrope',sans-serif");
+      text.setAttribute('font-weight','700');
+      text.setAttribute('fill', pickTextColor(fillColor));
+      
+      let label = (p.type === 'exclusive' ? '⭐ ' : '') + p.text;
+      if(label.length > 12) label = label.slice(0,11)+'…';
+      text.textContent = label;
+      slicesG.appendChild(text);
+    });
+    renderBulbs();
+  }
+
+  function pickTextColor(bgHex){
+    const r = parseInt(bgHex.slice(1,3),16), g = parseInt(bgHex.slice(3,5),16), b = parseInt(bgHex.slice(5,7),16);
+    const lum = (0.299*r + 0.587*g + 0.114*b)/255;
+    return lum > 0.6 ? '#1a1200' : '#F5F1E8';
+  }
+
+  function renderBulbs(){
+    const ring = el('bulbRing');
+    ring.innerHTML='';
+    const count = 24;
+    for(let i=0;i<count;i++){
+      const angle = (360/count)*i;
+      const rad = angle*Math.PI/180;
+      const x = 50 + 48*Math.cos(rad);
+      const y = 50 + 48*Math.sin(rad);
+      const b = document.createElement('div');
+      b.className='bulb'; b.style.left = x+'%'; b.style.top = y+'%';
+      b.style.animationDelay = (i*0.09)+'s';
+      ring.appendChild(b);
+    }
+  }
+
+  el('addBtn').addEventListener('click', addFromInput);
+  el('prizeNameInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addFromInput(); });
+
+  function addFromInput(){
+    const nameInput = el('prizeNameInput');
+    const stockInput = el('prizeStockInput');
+    const typeSelect = el('prizeTypeSelect');
+    
+    const val = nameInput.value.trim();
+    if(!val) return;
+    let stock = parseInt(stockInput.value,10);
+    if(isNaN(stock) || stock < 1) stock = 1;
+    
+    const type = typeSelect.value;
+    const startTime = el('newStartTime').value;
+    const endTime = el('newEndTime').value;
+    const spinReq = parseInt(el('newSpinReq').value, 10) || 1;
+
+    const norm = val.toLowerCase();
+    const existing = state.prizes.find(p => p.text.trim().toLowerCase() === norm);
+    if (existing && stockInput.value === '1') {
+      stock = existing.stock;
+    }
+
+    state.prizes.push({
+      id: uid(),
+      text: val,
+      stock,
+      type,
+      startTime: type === 'exclusive' ? startTime : '00:00',
+      endTime: type === 'exclusive' ? endTime : '23:59',
+      spinReq: type === 'exclusive' ? spinReq : undefined,
+      spinsLeft: type === 'exclusive' ? spinReq : undefined
+    });
+    
+    syncStockByName(val, stock);
+
+    nameInput.value=''; stockInput.value='1';
+    typeSelect.value = 'standard';
+    el('newExclusiveTimeBox').classList.remove('show');
+    
+    renderAll();
+    saveState();
+  }
+
+  el('bulkToggle').addEventListener('click', ()=>{ el('bulkArea').classList.toggle('show'); });
+  el('bulkAddBtn').addEventListener('click', ()=>{
+    const ta = el('bulkInput');
+    const lines = ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
+    if(lines.length===0) return;
+    
+    lines.forEach(line=>{
+      const parts = line.split(/[,;]/);
+      const name = (parts[0]||'').trim();
+      if(!name) return;
+
+      const norm = name.toLowerCase();
+      const existing = state.prizes.find(p => p.text.trim().toLowerCase() === norm);
+
+      let stock = parseInt((parts[1]||'').trim(),10);
+      if(isNaN(stock) || stock < 1) {
+        stock = existing ? existing.stock : 1;
+      }
+
+      const typeRaw = (parts[2]||'').trim().toLowerCase();
+      const type = (typeRaw === 'exc' || typeRaw === 'exclusive') ? 'exclusive' : 'standard';
+      const startTime = (parts[3]||'').trim() || '12:00';
+      const endTime = (parts[4]||'').trim() || '23:59';
+      const spinReq = parseInt((parts[5]||'').trim(), 10) || 1;
+
+      state.prizes.push({
+        id: uid(),
+        text: name,
+        stock,
+        type,
+        startTime,
+        endTime,
+        spinReq: type === 'exclusive' ? spinReq : undefined,
+        spinsLeft: type === 'exclusive' ? spinReq : undefined
+      });
+      syncStockByName(name, stock);
+    });
+    
+    ta.value='';
+    renderAll();
+    saveState();
+  });
+
+  function removePrize(id){
+    state.prizes = state.prizes.filter(p=>p.id!==id);
+    renderAll();
+    saveState();
+  }
+
+  function adjustStock(id, delta){
+    const p = state.prizes.find(p=>p.id===id);
+    if(!p) return;
+    const newStock = Math.max(0, (p.stock||0) + delta);
+    syncStockByName(p.text, newStock);
+    renderAll();
+    saveState();
+  }
+  function setStock(id, value){
+    const p = state.prizes.find(p=>p.id===id);
+    if(!p) return;
+    if(isNaN(value) || value < 0) value = 0;
+    syncStockByName(p.text, value);
+    renderAll();
+    saveState();
+  }
+
+  let resetPrizesConfirming = false;
+  el('resetPrizesBtn').addEventListener('click', () => {
+    const btn = el('resetPrizesBtn');
+    if (!resetPrizesConfirming) {
+      resetPrizesConfirming = true;
+      btn.textContent = '⚠️ Klik sekali lagi untuk hapus hadiah';
+      btn.classList.add('confirming');
+      setTimeout(() => {
+        resetPrizesConfirming = false;
+        btn.textContent = '🗑️ Hapus Semua Hadiah';
+        btn.classList.remove('confirming');
+      }, 3000);
+      return;
+    }
+    resetPrizesConfirming = false;
+    btn.textContent = '🗑️ Hapus Semua Hadiah';
+    btn.classList.remove('confirming');
+    state.prizes = [];
+    renderAll();
+    saveState();
+    showNotice('Semua daftar hadiah berhasil dihapus.', 'DIHAPUS');
+  });
+
+  let resetHistoryConfirming = false;
+  el('resetHistoryBtn').addEventListener('click', () => {
+    const btn = el('resetHistoryBtn');
+    if (!resetHistoryConfirming) {
+      resetHistoryConfirming = true;
+      btn.textContent = '⚠️ Klik sekali lagi untuk hapus riwayat';
+      btn.classList.add('confirming');
+      setTimeout(() => {
+        resetHistoryConfirming = false;
+        btn.textContent = '🧹 Hapus Semua Riwayat';
+        btn.classList.remove('confirming');
+      }, 3000);
+      return;
+    }
+    resetHistoryConfirming = false;
+    btn.textContent = '🧹 Hapus Semua Riwayat';
+    btn.classList.remove('confirming');
+    state.history = [];
+    renderAll();
+    saveState();
+    showNotice('Semua riwayat undian berhasil dibersihkan.', 'DIHAPUS');
+  });
+
+  const wheelRotor = el('wheelRotor');
+  spinBtn.addEventListener('click', spin);
+
+  function spin(){
+    const participantName = participantInput.value.trim();
+    const availableSlices = sliceRanges.filter(s => (s.prize.stock || 0) > 0);
+    
+    if(!participantName || availableSlices.length===0 || isSpinning) return;
+    if(state.history.length >= 200) {
+      showNotice('Riwayat undian sudah penuh (200/200). Harap minta Admin menghapus riwayat terlebih dahulu.', 'RIWAYAT PENUH');
+      return;
+    }
+
+    isSpinning = true;
+    updateSpinAvailability();
+    wheelStage.classList.add('spinning');
+    participantInput.disabled = true;
+
+    // ALGORITMA COUNTDOWN EXCLUSIVE
+    let triggeredExclusivePrize = null;
+
+    // 1. Proses penurunan angka countdown setiap putaran
+    state.prizes.forEach(p => {
+        if (p.type === 'exclusive' && (p.stock || 0) > 0 && isPrizeInWIBWindow(p)) {
+            // Inisialisasi jika belum diset
+            if (typeof p.spinsLeft === 'undefined') p.spinsLeft = p.spinReq || 1;
+            
+            // Turunkan countdown sebesar 1 untuk putaran ini
+            if (p.spinsLeft > 0) {
+                p.spinsLeft--; 
+            }
+            
+            // Jika mencapai 0, maka p adalah jackpot yang akan ter-trigger sekarang
+            if (p.spinsLeft === 0 && !triggeredExclusivePrize) {
+                triggeredExclusivePrize = p;
+            }
+        }
+    });
+
+    // 2. Pemilihan Pemenang Aktual
+    let selectedSlice = availableSlices[0];
+
+    if (triggeredExclusivePrize) {
+        // Jika ada yang mencapai angka 0, pastikan dia yang menang!
+        selectedSlice = availableSlices.find(s => s.prize.id === triggeredExclusivePrize.id) || availableSlices[0];
+    } else {
+        // Jika tidak ada Exclusive yang ter-trigger, undi hadiah Standar saja
+        const standardSlices = availableSlices.filter(s => s.prize.type !== 'exclusive');
+        
+        if (standardSlices.length > 0) {
+            // Acak secara normal diantara hadiah Standar
+            selectedSlice = standardSlices[Math.floor(Math.random() * standardSlices.length)];
+        } else {
+            // Edge Case: Jika SELURUH hadiah Standar sudah habis, dan hanya ada Exclusive,
+            // maka sistem terpaksa mengacak dan memberikan salah satu hadiah Exclusive lebih awal (fallback)
+            selectedSlice = availableSlices[Math.floor(Math.random() * availableSlices.length)];
+            const actualPrize = state.prizes.find(p => p.id === selectedSlice.prize.id);
+            if (actualPrize) actualPrize.spinsLeft = 0; // Reset ke 0
+        }
+    }
+
+    const winner = selectedSlice.prize;
+    const range = selectedSlice;
+    const segMid = (range.start+range.end)/2;
+    const segWidth = range.end-range.start;
+    const jitter = (Math.random()*segWidth*0.6) - segWidth*0.3;
+
+    let targetMod = -90 - segMid + jitter;
+    targetMod = ((targetMod % 360) + 360) % 360;
+
+    const spins = 6 + Math.floor(Math.random()*3);
+    const baseline = currentAngle - (((currentAngle % 360)+360)%360);
+    const toAngle = baseline + spins*360 + targetMod + 360;
+
+    const duration = 4400;
+    const start = performance.now();
+    const fromAngle = currentAngle;
+
+    function frame(now){
+      const t = Math.min(1, (now-start)/duration);
+      const eased = 1 - Math.pow(1-t, 3.4);
+      const angle = fromAngle + (toAngle-fromAngle)*eased;
+      wheelRotor.setAttribute('transform', `rotate(${angle.toFixed(2)} ${CENTER} ${CENTER})`);
+      if(t < 1){
+        requestAnimationFrame(frame);
+      } else {
+        currentAngle = toAngle;
+        finishSpin(winner, participantName);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function finishSpin(winner, participantName){
+    isSpinning = false;
+    wheelStage.classList.remove('spinning');
+    participantInput.disabled = false;
+
+    // Kurangi Stok Hadiah dan Reset Countdown Exclusive
+    const target = state.prizes.find(p=>p.id===winner.id);
+    if(target) {
+      const newStock = Math.max(0, (target.stock||0) - 1);
+      syncStockByName(target.text, newStock);
+
+      // Jika yang dimenangkan adalah Exclusive, Reset Countdown untuk pengguna berikutnya
+      if (target.type === 'exclusive') {
+         state.prizes.forEach(p => {
+             if (p.text.trim().toLowerCase() === target.text.trim().toLowerCase() && p.type === 'exclusive') {
+                 p.spinsLeft = p.spinReq || 1;
+             }
+         });
+      }
+    }
+
+    state.history.unshift({
+      id: uid(),
+      participant: participantName,
+      prize: (winner.type === 'exclusive' ? '⭐ ' : '') + winner.text,
+      time: new Date().toISOString()
+    });
+    
+    if(state.history.length > 200) state.history = state.history.slice(0, 200);
+
+    participantInput.value = '';
+
+    renderAll();
+    saveState();
+    showWinner(participantName, winner.text);
+  }
+
+  function showWinner(participant, prizeText){
+    el('winnerEyebrow').textContent = `Selamat, ${participant}!`;
+    el('winnerName').textContent = prizeText;
+    el('overlayWinner').classList.add('show');
+    launchConfetti();
+  }
+  el('closeOverlay').addEventListener('click', ()=>{ el('overlayWinner').classList.remove('show'); });
+  el('overlayWinner').addEventListener('click', (e)=>{ if(e.target.id==='overlayWinner') el('overlayWinner').classList.remove('show'); });
+
+  function launchConfetti(){
+    const card = el('winnerCard');
+    for(let i=0;i<28;i++){
+      const p = document.createElement('div');
+      p.className='confetti-piece';
+      p.style.left = (Math.random()*100)+'%';
+      p.style.background = PALETTE[Math.floor(Math.random()*PALETTE.length)];
+      p.style.animationDuration = (1.5+Math.random()*1.2)+'s';
+      p.style.animationDelay = (Math.random()*0.3)+'s';
+      card.appendChild(p);
+      setTimeout(()=>p.remove(), 3000);
+    }
+  }
+
+  setInterval(() => {
+    if (!isSpinning) {
+      renderPrizes();
+      renderWheel();
+      updateSpinAvailability();
+    }
+  }, 10000);
+</script>
+</body>
+</html>
